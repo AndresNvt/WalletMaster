@@ -154,23 +154,32 @@ a:hover {
 .navbar {
   height: 80px;
   margin: 20px;
+  background-color: white ;
   border-radius: 15px;
   border: solid 4px;
   border-color: #fff;
   padding: 1rem;
-  animation: navbar-border-color 4s linear infinite;
+  animation: navbar-border-bg-color 4s linear infinite;
 }
 
-@keyframes navbar-border-color {
+
+@keyframes navbar-border-bg-color {
   0% {
-    border-color: #8a38b1;
+    background-color: #23102c;
+    border-color: #502677;
   }
   25% {
-    border-color: #0a144e;
+    background-color: #18102c;
+    border-color: #492986;
+  }
+  50% {
+    background-color: #1f102c;
+    border-color: #2d0a4e;
   }
   100% {
-    border-color: #8a38b1;
-}
+    background-color: #23102c;
+    border-color: #502677;
+  }
 }
 
 
@@ -352,7 +361,6 @@ a:hover {
     position: absolute;
     top: 0;
     left: 0;
-    background: transparent !important;
     z-index: 999;
   }
 
