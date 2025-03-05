@@ -1,0 +1,359 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #121212;
+}
+
+h1 {
+    font-size: 4rem;
+    color: white;
+    text-shadow:
+    -1px -1px 0 #0a144e,
+    1.5px 1.5px 0 #8a38b1;
+}
+
+h5 {
+    color: white !important;
+}
+
+.card {
+    background-color: #1d1c1c;
+    border: 3px solid;
+    animation: card-border-color 5s linear infinite;
+}
+
+@keyframes card-border-color {
+    0% {
+      border-color: #0a144e;
+    }
+    25% {
+      border-color: #18102c;
+    }
+    50% {
+      border-color: #2d0a4e;
+    }
+    100% {
+      border-color: #0a144e;
+    }
+}
+
+/* Estilos botones trasacciones */
+.btn.btn-primary {
+    background-color: #ffffff !important;
+    color: #8a38b1 !important;
+    font-weight: 700;
+    font-family: "Open Sans", sans-serif;
+    transition: 0.5s;
+    border: 2px solid #8a38b1;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+.btn.btn-danger {
+    background-color: #ffffff !important;
+    color: #dc3545;
+    font-weight: 700;
+    font-family: "Open Sans", sans-serif;
+    transition: 0.5s;
+    border: #dc3545;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+/* Estilos para la modal */
+.modal-body {
+    background-color: #1d1c1c;
+}
+
+.modal-footer {
+    background-color: #212529;
+}
+
+
+/* Estilos para el historial de transacciones */
+.card-header {
+    background-color: #1a1a1a;
+    border-bottom: 2px solid;
+    animation: card-border-color 5s linear infinite;
+}
+
+.table-dark {
+    --bs-table-bg: #1d1c1c;
+    --bs-table-striped-bg: #252525;
+    border-color: #333;
+}
+
+.table-primary {
+    --bs-table-bg: rgba(54, 162, 235, 0.15);
+    --bs-table-color: white;
+}
+
+.table-danger {
+    --bs-table-bg: rgba(255, 99, 132, 0.15);
+    --bs-table-color: white;
+}
+
+.transaction-row {
+    transition: all 0.2s ease;
+}
+
+.transaction-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para los campos de entrada */
+.form-control {
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background-color: #ececec;
+    border-color: #7e57c2;
+    box-shadow: 0 0 0 0.25rem rgba(126, 87, 194, 0.25);
+}
+
+.form-control::placeholder {
+    color: #999;
+}
+
+/* Estilos para el botón de alternar historial */
+#toggleHistory {
+    transition: all 0.3s ease;
+}
+
+#toggleHistory:hover {
+    background-color: #333;
+}
+
+/* Estilos para el historial expandible */
+#historyContent {
+    max-height: 300px;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+/* Estilos para las insignias (badges) */
+.badge {
+    font-weight: normal;
+    padding: 0.25em 0.6em;
+}
+
+/* SIDE BAR */
+.sidebar-container {
+    position: fixed; 
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 250px;
+    background-color: #202020;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    border: 4px solid;
+    animation: sidebar-border-color 5s linear infinite;
+}
+
+@keyframes sidebar-border-color {
+    0% {
+      border-color: #0a144e;
+    }
+    25% {
+      border-color: #18102c;
+    }
+    50% {
+      border-color: #2d0a4e;
+    }
+    100% {
+      border-color: #0a144e;
+    }
+}
+
+.sidebar-toggle {
+    display: none;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid #000000;
+}
+
+.sidebar-logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-title {
+    color: white; 
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.sidebar-nav {
+    flex-grow: 1;
+    padding: 1rem 0;
+}
+
+.nav-link {
+    padding: 0.8rem 1.5rem;
+    color: #fff; 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #505050;
+    color: #a67fda; 
+}
+
+
+.nav-link.active {
+    background-color: #460d7c; 
+    color: white;
+    border-left: 4px solid #a67fda; 
+}
+
+.nav-link i {
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid #444; 
+}
+
+
+.container {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    transition: none; 
+}
+
+/* Responsive  */
+@media (max-width: 768px) {
+    .sidebar-container {
+        width: 250px;
+        left: -250px; 
+    }
+    
+    .sidebar-toggle {
+        display: flex; 
+        position: fixed;
+        left: 10px;
+        top: 10px;
+        z-index: 1001;
+    }
+    
+    .sidebar-container.active {
+        left: 0; 
+    }
+    
+    .container {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+.form-label {
+    color: white !important;
+}
+
+h3 {
+    color: white !important;
+}
+
+h4 {
+    color: white !important;
+}
+
+span {
+    color: white;
+}
+
+/* Estilos específicos para el historial de transacciones */
+.table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: #7e57c2 #1d1c1c;
+}
+
+.table-responsive::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #1d1c1c;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: #7e57c2;
+    border-radius: 4px;
+}
+
+.deleted-transaction {
+    background-color: #444;
+    color: #888;
+    text-decoration: line-through;
+}
+
+/* Estilos mejorados para las tarjetas */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+
+/* Estilos de ahorros */
+
+.h2-savings {
+    color: #ffffff !important;
+}
+
+h3, .text-muted {
+    color: #c0c0c0 !important;
+}
+
+h6 {
+    color: #ffffff;
+}
+
+
+
+/* HEAD ESTILO */
+
+.transaction-deleted {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.action-btn {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.delete-btn {
+    color: #dc3545;
+}
+
+.delete-btn:hover {
+    color: #b02a37;
+}

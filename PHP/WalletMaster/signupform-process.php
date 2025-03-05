@@ -1,15 +1,9 @@
 <?php
-
-include 'conexion.php';
+session_start();
+include '../conexion.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $fname = $_POST['fname'];
     $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $dbirth = $_POST['dbirth'];
-    $gender = $_POST['gender'];
-    $department = $_POST["department"];
-    $city = $_POST["city"];
     $password = $_POST['password'];
     $cpassword = $_POST["cpassword"];
     $registration_date = date("Y-m-d H:i:s");
@@ -20,17 +14,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO users (fname, email, phone, dbirth, gender, department, city, password, registration_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO users (email, password_hash, registration_time) VALUES (?, ?, ?)";
     $stmt = $conexion->prepare($sql);
 
     if ($stmt === false) {
         die("Error en la preparación de la consulta: " . $conexion->error);
     }
 
-    $stmt->bind_param("sssssssss", $fname, $email, $phone, $dbirth, $gender, $department, $city, $hashed_password, $registration_date);
+    $stmt->bind_param("sss", $email, $hashed_password, $registration_date);
 
     if ($stmt->execute()) {
-        echo "Registro exitoso.";
+        $stmt->close();
+        $conexion->close();
+        // Guardar mensaje en la sesión
+        $_SESSION['mensaje'] = "Registro exitoso! Por favor, inicia sesión.";
+        $_SESSION['tipo_mensaje'] = "success";
+        header("Location: sesionform.php");
+        exit();
     } else {
         echo "Error: " . $stmt->error;
     }

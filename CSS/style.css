@@ -1,19 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Handjet:wght@100..900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Laila:wght@300;400;500;600;700&family=SUSE:wght@100..800&family=Space+Grotesk:wght@300..700&display=swap');
+
 
 
 
 /*ESTILOS GENERALES*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body,
 html {
   width: 100%;
   height: 100%;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Kanit', sans-serif;
+}
+
+body {
+  background-color: #111111;
 }
 
 body,
 p {
   color: #555;
-  font: 400 1rem/1.625rem "Open Sans", sans-serif;
+  font: 400 1.125rem/1.625rem "Kanit", sans-serif;
 }
 
 h1 {
@@ -26,6 +38,32 @@ h2 {
   color: #333;
   font: 700 2rem/2.625rem "Open Sans", sans-serif;
   letter-spacing: -0.2px;
+}
+
+.h2-heading {
+  font: 500 2rem/2.625rem "Kanit", sans-serif;
+}
+
+.card h4 {
+  font: 600 1.840rem/1.625rem "Kanit", sans-serif;
+  color: #f3f7fd;
+  text-shadow: 
+  -1px -1px 0 #0a144e,
+  1.5px 1.5px 0 #8a38b1;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.card-p {
+  color: #f3f7fd;
+  font: 400 1.100rem/1.120rem "SUSE", system-ui;
+  margin-top: 2.5rem;
+}
+
+.card-p-3 {
+  color: #f3f7fd;
+  font: 400 1.100rem/1.120rem "SUSE", system-ui;
+  margin-top: 4.145rem;
 }
 
 a {
@@ -64,11 +102,24 @@ a:hover {
   text-decoration: none;
 }
 
-.above-heading {
-  color: #8a38b1;
-  font: 700 1.125rem/0.875rem "Open Sans", sans-serif;
+.above-heading-1 {
+  color: #ae00ff;
+  font: 700 1.842rem "SUSE", system-ui;
   text-align: center;
-  margin-bottom: 0.280rem;
+  margin-bottom: 25px;
+  text-shadow: 
+  -1px -1px 0 #a3aeeb,
+   1px  1px 0 #102181;
+}
+
+.above-heading-2 {
+  color: #4e15d4;
+  font: 700 1.842rem "SUSE", system-ui;
+  text-align: left;
+  margin-bottom: 25px;
+  text-shadow: 
+  -1px -1px 0 #a3aeeb,
+   1px  1px 0 #2d0a4e;
 }
 
 
@@ -107,6 +158,17 @@ a:hover {
   font-family: "Open Sans", sans-serif;
   transition: 0.5s;
   border: 2px solid #8a38b1;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.btn.btn-danger {
+  background-color: #ffffff !important;
+  color: #dc3545;
+  font-weight: 700;
+  font-family: "Open Sans", sans-serif;
+  transition: 0.5s;
+  border: #dc3545;
   padding: 10px 20px;
   box-sizing: border-box;
 }
@@ -155,7 +217,7 @@ a:hover {
   height: 80px;
   margin: 20px;
   background-color: white ;
-  border-radius: 15px;
+  border-radius: 10px;
   border: solid 4px;
   border-color: #fff;
   padding: 1rem;
@@ -186,30 +248,31 @@ a:hover {
 
 
 .navbar-light .navbar-nav .nav-link {
-  margin-right: 25px;
+  margin-right: 18px;
   color: #8d8d8d !important;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  transition: .5s;
+  transition: .3s ease;
   position: relative;
 }
 
-.nav-link::before {
+.navbar .nav-link::before {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
-  height: 2px;
-  background-color: #8a38b1 !important;
+  height: 3px;
+  filter: blur(0.5px);
+  background-color: #ffffff !important;
   visibility: hidden;
   transition: 0.3s ease-in-out;
 }
 
 .nav-link:hover::before,
-.nav-link:active::before {
+.nav-link.active::before {
   width: 100%;
   visibility: visible;
 }
@@ -240,6 +303,10 @@ a:hover {
   padding-left: 2rem;
 }
 
+.home-logo:hover {
+  transform: scale(1.1);
+}
+
 .sticky-top.navbar-light .navbar-brand img {
   max-height: 45px;
 }
@@ -257,7 +324,7 @@ a:hover {
   border: none;
 }
 
-.navbar-toggler:focus {}
+
 
 .navbar-toggler-icon {
   background-image: url('data:image/svg+xml;charset=utf8,%3Csvg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath stroke="white" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"/%3E%3C/svg%3E');
@@ -383,13 +450,17 @@ a:hover {
 /* ENCABEZADO */
 
 .header {
-  background-color: #1d1c1c;
-  padding: 6rem;
+  background-color: #1d1d1d;
+  padding: 0;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 
 .header .header-content {
-  padding-top: 8rem;
-  padding-bottom: 4rem;
+  padding: 0;
   text-align: center;
 }
 
@@ -400,7 +471,10 @@ a:hover {
 .header h1 {
   margin-bottom: 1rem;
   color: #fff;
-  font-size: 2.5rem;
+  text-shadow: 
+  -1px -1px 0 #0a144e,
+  1.5px 1.5px 0 #8a38b1;
+  font-size: 5rem;
   line-height: 3rem;
 }
 
@@ -423,13 +497,45 @@ a:hover {
   color: #fff;
 }
 
+.header .blocks-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#blocks {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.block {
+  width: calc(100% / 35);
+  height: 50px;
+  box-sizing: border-box;
+  border: 0.5px solid rgb(10, 10, 10);
+  transition: border-color 0.3s ease;
+}
+
+.highlight {
+  border-color: #502677;
+}
 
 
 
 @media (min-width: 1200px) {
   .header .header-content {
-    padding-top: 7rem;
-    padding-bottom: 5rem;
+    margin-top: 18rem;
   }
 
   .header .text-container {
@@ -439,7 +545,7 @@ a:hover {
 
   .header .image-container {
     margin-top: 1rem;
-    margin-left: 1.5rem;
+    margin-left: 8.5rem;
   }
 
   .header .image-container .img-wrapper {
@@ -516,34 +622,70 @@ a:hover {
 /* DESCRIPCIÓN Y TARJETAS */
 
 .cards-1 {
-  padding-top: 3.85rem;
-  padding-bottom: 3rem;
+  padding-top: 3.425rem;
+  padding-bottom: 3.425rem;
   text-align: center;
 }
 
 .cards-1 .h2-heading {
   margin-bottom: 3.5rem;
+  color: #ececec;
+  text-shadow: 
+  -1px -1px 0 #0a144e,
+  1.5px 1.5px 0 #8a38b1;
 }
 
 .cards-1 .card {
+  background-color: #1d1c1c;
   max-width: 21rem;
-  margin-right: auto;
-  margin-bottom: 3.5rem;
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
   margin-left: auto;
+  margin-right: auto;
   padding: 0;
-  border: none;
+  border: 3px solid;
+  animation: card-border-color 5s linear infinite;
+}
+
+@keyframes card-border-color {
+  0% {
+    border-color: #0a144e;
+  }
+  25% {
+    border-color: #18102c;
+  }
+  50% {
+    border-color: #2d0a4e;
+  }
+  100% {
+    border-color: #0a144e;
+  }
 }
 
 .cards-1 .card-image {
   max-width: 16rem;
-  margin-right: auto;
-  margin-bottom: 2rem;
+  margin-top: 3rem;
+  margin-bottom: 2.5rem;
   margin-left: auto;
+  margin-right: auto;
 }
 
 .cards-1 .card-body {
-  padding: 0;
+  margin-top: 2.425rem;
 }
+
+#image-efrotate {
+  height: 200px;
+  width: 300px;
+  transition: .5s;
+}
+
+#image-efrotate:hover {
+  position: relative;
+  box-shadow: 0px 0px 30px #2d0a4e;
+  transform: scale(1.1);
+}
+
 
 
 
@@ -571,7 +713,8 @@ a:hover {
 
   .cards-1 .card {
     display: inline-block;
-    width: 17rem;
+    width: 20rem;
+    height: 37.3rem;
     max-width: 100%;
     margin-right: 1rem;
     margin-left: 1rem;
@@ -579,7 +722,7 @@ a:hover {
   }
 
   .cards-1 .card-image {
-    width: 12.5rem;
+    width: 14rem;
   }
 }
 
@@ -591,8 +734,6 @@ a:hover {
   }
 }
 
-
-
 /* FIN DESCRIPCIÓN Y TARJETAS */
 
 
@@ -602,12 +743,42 @@ a:hover {
 .tabs {
   padding-top: 8rem;
   padding-bottom: 8.125rem;
-  background-color: #f3f7fd;
+  background-color: #1d1c1c;
+}
+
+.tabs .h2-heading {
+  text-shadow: 
+  -1px -1px 0 #a3aeeb,
+   1.5px  1.5px 0 #102181;
 }
 
 .tabs .h2-heading,
 .tabs .p-heading {
   text-align: center;
+  color: #f3f7fd;
+}
+
+.tabs h3 {
+  color: #f3f7fd;
+  text-shadow: 
+  -1px -1px 0 #a3aeeb,
+   1.5px  1.5px 0 #102181;
+   margin-bottom: 1.425rem;
+}
+
+.tabs p {
+  color: #f3f7fd;
+}
+
+.tabs strong {
+  color: #f3f7fd;
+  text-shadow: 
+  -1px -1px 0 #102181,
+  0.5px  0.5px 0 #a3aeeb;
+}
+
+.tabs .text-container .bx {
+  color: #834eff;
 }
 
 .tabs .nav-tabs {
@@ -633,12 +804,17 @@ a:hover {
 .tabs .nav-link:hover,
 .tabs .nav-link.active {
   background: transparent;
-  color: #8a38b1;
-  border-bottom: 2px solid #8a38b1;
+  color: #834eff;
+  border-bottom: 2px solid #4e15d4;
 }
 
 .tabs .nav-link .bx {
   margin-right: 0.225rem;
+}
+
+.tabs .nav-link .bx:hover,
+.tabs .nav-link.active .bx {
+  color: white;
 }
 
 .i-tabs-e {
@@ -650,10 +826,11 @@ a:hover {
   margin-right: 3rem;
   margin-left: 5rem;
   margin-bottom: 0rem;
+  margin-top: 4rem;
 }
 
 .tabs .text-container {
-  margin: 1.5rem 0rem 1.5rem 1rem;
+  margin: 4rem 0rem 1.5rem 1rem;
 }
 
 
@@ -664,6 +841,7 @@ a:hover {
 .screen-1 {
   padding-top: 8rem;
   padding-bottom: 8rem;
+  max-width: 2000px;
 }
 
 .screen-1 .text-container {
@@ -674,32 +852,91 @@ a:hover {
 }
 
 .screen-1 h2 {
-  margin-bottom: 1rem;
+  color: #f3f7fd;
+  font: 600 2rem/2.625rem "Kanit", sans-serif;
+  text-shadow: 
+  -1px -1px 0 #0a144e,
+  1.5px 1.5px 0 #177a81;
+  margin-bottom: 1.825rem;
+}
+
+.screen-1 strong {
+  color: #f3f7fd;
+  text-shadow: 
+  -1px -1px 0 #0a144e,
+  1.5px 1.5px 0 #177a81;
+}
+
+.screen-1 p {
+  color: #e6eaf0;
+  margin-bottom: 1.425rem;
 }
 
 .screen-1 .list-unstyled {
+  margin-top: 1.375rem;
   margin-bottom: 1.375rem;
 }
 
 .li-space-lg li {
-  margin-bottom: 0.625rem;
+  margin-bottom: 0.725rem;
 }
 
 .screen-1 .list-unstyled .bx {
-  color: #8a38b1;
+  color: #177a81;
   font-size: 1.425rem;
-  line-height: 1.625rem;
+  line-height: 1.665rem;
 }
 
 .screen-1 .list-unstyled .media-body {
+  color: #e6eaf0;
   margin-left: 0.425rem;
 }
 
 .screen-1 .image-container {
-  margin-right: 0.5rem;
-  margin-left: 7rem;
-  padding-bottom: 1rem;
+  margin-right: 4rem;
+  margin-left: 6rem;
+  margin-bottom: 0rem;
+  margin-top: 0rem;
 }
+
+.image-container {
+  transition: .5s;
+}
+
+.image-container:hover {
+  transform: scale(1.1);
+}
+
+.svg-border-rounded svg {
+  position: relative;
+  height: 3rem;
+  width: 100%;
+}
+
+
+
+/* PIE DE PÁGINA */
+
+
+footer p {
+  font: 600 1.840rem/1.625rem "Kanit", sans-serif;
+  color: #ececec;
+  font-size: 3rem;
+  line-height: 1.2;
+  text-shadow: 
+  -1px -1px 0 #0a144e,
+  1.5px 1.5px 0 #8a38b1;
+}
+
+footer h3 {
+  font: 600 1.450rem/1.625rem "Kanit", sans-serif;
+}
+
+
+/* FIN PIE DE PÁGINA */
+
+
+
 
 
 
