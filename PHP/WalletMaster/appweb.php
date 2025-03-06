@@ -225,6 +225,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         exit;
     }
+    
+    // Agregar este código en la sección de procesamiento de peticiones POST
+    if (isset($_POST['action']) && $_POST['action'] === 'get_trend_data') {
+        $days = isset($_POST['days']) ? intval($_POST['days']) : 7;
+        $userId = $_SESSION['user_id']; // Asegúrate de tener el ID del usuario en la sesión
+        
+        $trendData = getTrendData($pdo, $userId, $days);
+        
+        echo json_encode([
+            'success' => true,
+            'trend_data' => $trendData
+        ]);
+        exit;
+    }
 }
 
 // Obtener totales del usuario (solo de transacciones activas)
@@ -296,6 +310,68 @@ function getTransactionHistory($pdo, $userId, $search = '', $limit = 10) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Agregar esta función para obtener datos de tendencia
+function getTrendData($pdo, $userId, $days = 7) {
+    // Obtener transacciones de los últimos X días
+    $stmt = $pdo->prepare("
+        SELECT DATE(transaction_date) as date, type, SUM(amount) as total 
+        FROM transactions 
+        WHERE user_id = ? AND status = 'active' 
+        AND transaction_date >= DATE_SUB(CURRENT_DATE(), INTERVAL ? DAY) 
+        GROUP BY DATE(transaction_date), type 
+        ORDER BY date ASC
+    ");
+    $stmt->execute([$userId, $days]);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Preparar arrays para los datos
+    $dates = [];
+    $incomeByDate = [];
+    $expenseByDate = [];
+    $balanceByDate = [];
+
+    // Obtener todas las fechas en el rango
+    $endDate = new DateTime();
+    $startDate = new DateTime();
+    $startDate->modify('-' . ($days - 1) . ' days');
+    $interval = new DateInterval('P1D');
+    $dateRange = new DatePeriod($startDate, $interval, $endDate);
+
+    foreach ($dateRange as $date) {
+        $dateStr = $date->format('Y-m-d');
+        $dates[] = $date->format('D j'); // Ejemplo: "Lun 15"
+        $incomeByDate[$dateStr] = 0;
+        $expenseByDate[$dateStr] = 0;
+    }
+
+    // Rellenar los datos reales
+    foreach ($results as $row) {
+        if ($row['type'] === 'income') {
+            $incomeByDate[$row['date']] = floatval($row['total']);
+        } else {
+            $expenseByDate[$row['date']] = floatval($row['total']);
+        }
+    }
+
+    // Calcular balance diario
+    foreach ($incomeByDate as $date => $income) {
+        $expense = $expenseByDate[$date];
+        $balanceByDate[$date] = $income - $expense;
+    }
+
+    // Convertir a arrays indexados (para Chart.js)
+    $incomeData = array_values($incomeByDate);
+    $expenseData = array_values($expenseByDate);
+    $balanceData = array_values($balanceByDate);
+
+    return [
+        'labels' => $dates,
+        'incomeData' => $incomeData,
+        'expenseData' => $expenseData,
+        'balanceData' => $balanceData
+    ];
+}
+
 // Establecer el límite de transacciones a mostrar
 $transactionLimit = isset($_GET['limit']) ? intval($_GET['limit']) : 50;
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -313,13 +389,14 @@ $transactionHistory = getTransactionHistory($pdo, $_SESSION['user_id'], $searchQ
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../../CSS/style.css">
     <link rel="stylesheet" href="../../CSS/stylesapp.css">
+    <!-- Favicon -->
+    <link rel="icon" href="../../imagenes/Favicon.png">
 </head>
 <body>
 
 <?php include 'sidebar.php'; ?>
-
+<div class="main-content">
     <div class="container mt-5">
         <h1 class="text-center mb-5">WalletMaster</h1>
 
@@ -444,7 +521,7 @@ $transactionHistory = getTransactionHistory($pdo, $_SESSION['user_id'], $searchQ
                         <!-- Controles de paginación -->
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <div>
-                                <label for="limit-select">Mostrar:</label>
+                                <label for="limit-select" class="text-light">Mostrar:</label>
                                 <select id="limit-select" class="form-select form-select-sm d-inline-block ms-2" style="width: auto;">
                                     <option value="10" <?php echo $transactionLimit == 10 ? 'selected' : ''; ?>>10</option>
                                     <option value="25" <?php echo $transactionLimit == 25 ? 'selected' : ''; ?>>25</option>
@@ -452,7 +529,7 @@ $transactionHistory = getTransactionHistory($pdo, $_SESSION['user_id'], $searchQ
                                     <option value="100" <?php echo $transactionLimit == 100 ? 'selected' : ''; ?>>100</option>
                                     <option value="200" <?php echo $transactionLimit == 200 ? 'selected' : ''; ?>>200</option>
                                 </select>
-                                entradas
+                                <label class="text-light">entradas</label>
                             </div>
                         </div>
                     </div>
@@ -461,10 +538,66 @@ $transactionHistory = getTransactionHistory($pdo, $_SESSION['user_id'], $searchQ
         </div>
 
         <!-- Gráficos -->
-        <div class="row">
-            <canvas id="myChart" width="400" height="200"></canvas>
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Gráficos Financieros</h5>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-light btn-sm active" id="viewBarChart">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <button class="btn btn-outline-light btn-sm" id="viewPieChart">
+                                <i class="fas fa-chart-pie"></i>
+                            </button>
+                            <button class="btn btn-outline-light btn-sm" id="viewTrendChart">
+                                <i class="fas fa-chart-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <!-- Gráfico de barras (visible por defecto) -->
+                            <div id="barChartContainer">
+                                <canvas id="incomeExpenseChart"></canvas>
+                            </div>
+                            
+                            <!-- Gráfico de torta (oculto inicialmente) -->
+                            <div id="pieChartContainer" style="display: none;">
+                                <canvas id="balanceDistributionChart"></canvas>
+                            </div>
+                            
+                            <!-- Gráfico de línea para tendencias (oculto inicialmente) -->
+                            <div id="trendChartContainer" style="display: none;">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center">
+                            <div class="col">
+                                <div class="text-primary">
+                                    <h6>Ingresos</h6>
+                                    <h5 id="chartIncomeTotal">$0</h5>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="text-danger">
+                                    <h6>Gastos</h6>
+                                    <h5 id="chartExpenseTotal">$0</h5>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="text-success">
+                                    <h6>Balance</h6>
+                                    <h5 id="chartBalanceTotal">$0</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
     <!-- Modal de Alerta -->
     <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
@@ -555,6 +688,9 @@ $transactionHistory = getTransactionHistory($pdo, $_SESSION['user_id'], $searchQ
                     
                     // Actualizar tabla de transacciones
                     updateTransactionTable(result.transactions);
+                    
+                    // Actualizar los totales en el pie de los gráficos
+                    updateChartTotals();
                 }
             } catch (e) {
                 console.error('Error al procesar respuesta', e);
@@ -742,58 +878,392 @@ $transactionHistory = getTransactionHistory($pdo, $_SESSION['user_id'], $searchQ
         });
     }
 
-    function updateChart() {
-        if (myChart) {
-            myChart.data.datasets[0].data = [transactionTotal, expenseTotal];
-            myChart.update();
-        }
-    }
+    function initializeCharts() {
+        // Obtener el contexto para los gráficos
+        const barCtx = document.getElementById('incomeExpenseChart').getContext('2d');
+        const pieCtx = document.getElementById('balanceDistributionChart').getContext('2d');
+        const lineCtx = document.getElementById('trendChart').getContext('2d');
 
-    // Inicializar Gráfico
-    const ctx = document.getElementById('myChart').getContext('2d');
-    myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Ingresos', 'Gastos'],
-            datasets: [{
-                label: 'Monto',
-                data: [transactionTotal, expenseTotal],
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 99, 132, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 99, 132, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toLocaleString('es-CO');
+        // Colores con mejor paleta
+        const colors = {
+            income: {
+                background: 'rgba(46, 134, 193, 0.7)',
+                border: 'rgba(46, 134, 193, 1)'
+            },
+            expense: {
+                background: 'rgba(192, 57, 43, 0.7)',
+                border: 'rgba(192, 57, 43, 1)'
+            },
+            balance: {
+                background: 'rgba(39, 174, 96, 0.7)',
+                border: 'rgba(39, 174, 96, 1)'
+            }
+        };
+
+        // 1. Gráfico de barras mejorado para ingresos vs gastos
+        const barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Ingresos', 'Gastos'],
+                datasets: [{
+                    label: 'Monto',
+                    data: [transactionTotal, expenseTotal],
+                    backgroundColor: [colors.income.background, colors.expense.background],
+                    borderColor: [colors.income.border, colors.expense.border],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    maxBarThickness: 100
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            callback: function(value) {
+                                return '$' + value.toLocaleString('es-CO');
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
                         }
                     }
-                }
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return formatCOP(context.raw);
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        callbacks: {
+                            label: function(context) {
+                                return formatCOP(context.raw);
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
 
+        // 2. Gráfico de torta para distribución del balance - CORREGIDO
+        const pieChart = new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Disponible', 'Gastado'],
+                datasets: [{
+                    data: [totalAmount, expenseTotal],
+                    backgroundColor: [colors.balance.background, colors.expense.background],
+                    borderColor: [colors.balance.border, colors.expense.border],
+                    borderWidth: 2,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true, // Asegura que respete el tamaño del contenedor
+                aspectRatio: 2, // Establece una relación de aspecto más apropiada
+                layout: {
+                    padding: 10 // Añade un poco de padding interno
+                },
+                cutout: '60%', // Reducido ligeramente para mejor visualización
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = formatCOP(context.raw);
+                                const percentage = Math.round((context.raw / (totalAmount + expenseTotal)) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 3. Configurar el gráfico de tendencias
+        // Llamamos directamente a createTrendChartWithSampleData con datos simulados
+        // para asegurar que se muestre algo inicialmente
+        setupTrendChart(lineCtx, colors);
+
+        // Añadir a un objeto global para poder actualizar posteriormente
+        window.appCharts = {
+            barChart,
+            pieChart,
+            lineChart: window.appCharts ? window.appCharts.lineChart : null
+        };
+    }
+
+    // Función para configurar el gráfico de tendencias
+    function setupTrendChart(ctx, colors) {
+        // Esta función obtendría datos del servidor para mostrar tendencias
+        // En este ejemplo, solicitamos datos de los últimos 7 días
+        $.post(window.location.href, {
+            action: 'get_trend_data',
+            days: 7
+        }).done(function(response) {
+            try {
+                const result = typeof response === 'object' ? response : JSON.parse(response);
+                if (result.success && result.trend_data) {
+                    createTrendChart(ctx, result.trend_data, colors);
+                } else {
+                    // Si no hay datos de tendencia disponibles, mostrar mensaje
+                    document.getElementById('trendChartContainer').innerHTML = 
+                        '<div class="text-center text-muted p-4">No hay suficientes datos para mostrar tendencias</div>';
+                }
+            } catch (e) {
+                console.error('Error al procesar datos de tendencia', e);
+            }
+        }).fail(function() {
+            // Si falla la petición, intentar con datos simulados para demostración
+            createTrendChartWithSampleData(ctx, colors);
+        });
+    }
+
+    // Función para crear el gráfico de tendencias con datos de muestra
+    function createTrendChartWithSampleData(ctx, colors) {
+        // Datos de ejemplo para demostración
+        const today = new Date();
+        const labels = Array(7).fill().map((_, i) => {
+            const date = new Date(today);
+            date.setDate(date.getDate() - (6 - i));
+            return date.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric' });
+        });
+        
+        const incomeData = [15000, 22000, 18000, 25000, 17000, 30000, 28000];
+        const expenseData = [12000, 18000, 13000, 22000, 14000, 19000, 21000];
+        const balanceData = incomeData.map((inc, i) => inc - expenseData[i]);
+        
+        createTrendChart(ctx, { labels, incomeData, expenseData, balanceData }, colors);
+    }
+
+    // Función para crear el gráfico de tendencias con los datos proporcionados
+    function createTrendChart(ctx, data, colors) {
+        const lineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [
+                    {
+                        label: 'Balance',
+                        data: data.balanceData,
+                        backgroundColor: 'transparent',
+                        borderColor: colors.balance.border,
+                        borderWidth: 3,
+                        pointBackgroundColor: colors.balance.border,
+                        tension: 0.2,
+                        fill: false,
+                        order: 1
+                    },
+                    {
+                        label: 'Ingresos',
+                        data: data.incomeData,
+                        backgroundColor: 'transparent',
+                        borderColor: colors.income.border,
+                        borderWidth: 2,
+                        pointBackgroundColor: colors.income.border,
+                        borderDash: [5, 5],
+                        tension: 0.2,
+                        order: 2
+                    },
+                    {
+                        label: 'Gastos',
+                        data: data.expenseData,
+                        backgroundColor: 'transparent',
+                        borderColor: colors.expense.border,
+                        borderWidth: 2,
+                        pointBackgroundColor: colors.expense.border,
+                        borderDash: [5, 5],
+                        tension: 0.2,
+                        order: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            callback: function(value) {
+                                return '$' + value.toLocaleString('es-CO', { 
+                                    notation: 'compact',
+                                    compactDisplay: 'short'
+                                });
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            boxWidth: 12,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                return label + ': ' + formatCOP(context.raw);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Guardar referencia al gráfico
+        if (window.appCharts) {
+            window.appCharts.lineChart = lineChart;
+        }
+    }
+
+    // Función mejorada para actualizar todos los gráficos
+    function updateCharts() {
+        if (!window.appCharts) return;
+        
+        const { barChart, pieChart, lineChart } = window.appCharts;
+        
+        // Actualizar gráfico de barras
+        if (barChart) {
+            barChart.data.datasets[0].data = [transactionTotal, expenseTotal];
+            barChart.update();
+        }
+        
+        // Actualizar gráfico de torta
+        if (pieChart) {
+            pieChart.data.datasets[0].data = [totalAmount, expenseTotal];
+            pieChart.update();
+        }
+        
+        // No actualizamos el gráfico de tendencias aquí, ya que requeriría datos históricos
+        // Eso se haría en una función separada que obtiene datos del servidor
+    }
+
+    // Reemplazar la función updateChart actual con esta versión mejorada
+    function updateChart() {
+        updateCharts();
+    }
+
+    // Función para actualizar los totales mostrados en el pie del gráfico
+    function updateChartTotals() {
+        document.getElementById('chartIncomeTotal').textContent = formatCOP(transactionTotal);
+        document.getElementById('chartExpenseTotal').textContent = formatCOP(expenseTotal);
+        document.getElementById('chartBalanceTotal').textContent = formatCOP(totalAmount);
+    }
+
+    function toggleChartView(containerId) {
+    // Ocultar todos los contenedores de gráficos
+        document.getElementById('barChartContainer').style.display = 'none';
+        document.getElementById('pieChartContainer').style.display = 'none';
+        document.getElementById('trendChartContainer').style.display = 'none';
+        
+        // Mostrar el contenedor seleccionado
+        document.getElementById(containerId).style.display = 'block';
+        
+        // Forzamos el reajuste de tamaño después de mostrar el contenedor
+        window.dispatchEvent(new Event('resize'));
+        
+        // Si es el gráfico de tendencias, asegurarnos de que se muestre
+        if (containerId === 'trendChartContainer') {
+            if (window.appCharts && !window.appCharts.lineChart) {
+                const colors = {
+                    income: { background: 'rgba(46, 134, 193, 0.7)', border: 'rgba(46, 134, 193, 1)' },
+                    expense: { background: 'rgba(192, 57, 43, 0.7)', border: 'rgba(192, 57, 43, 1)' },
+                    balance: { background: 'rgba(39, 174, 96, 0.7)', border: 'rgba(39, 174, 96, 1)' }
+                };
+                setupTrendChart(
+                    document.getElementById('trendChart').getContext('2d'),
+                    colors
+                );
+            }
+        }
+    }
+
+    // Función para marcar el botón activo
+    function setActiveButton(button) {
+        // Quitar la clase active de todos los botones
+        document.querySelectorAll('.btn-group .btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Añadir la clase active al botón seleccionado
+        button.classList.add('active');
+    }
+
+    // Modificar la función refreshData para actualizar también los totales de los gráficos
+    const originalRefreshData = refreshData;
+    refreshData = function(searchQuery = '', limit = 50) {
+        return originalRefreshData(searchQuery, limit).then(function() {
+            updateChartTotals();
+            return Promise.resolve();
+        });
+    };
+    
     // Vincular eventos cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', function() {
+        // Añadir estilos adicionales para los contenedores de gráficos
+        const style = document.createElement('style');
+        style.textContent = `
+            .chart-container {
+                position: relative;
+                height: 300px;
+                width: 100%;
+                margin: 0 auto;
+            }
+            #barChartContainer, #pieChartContainer, #trendChartContainer {
+                position: relative;
+                height: 100%;
+                width: 100%;
+            }
+        `;
+        document.head.appendChild(style);
+    
         // Validación de entrada para permitir solo números positivos
         document.getElementById('transactionAmount').addEventListener('input', function() {
             if (this.value < 0) this.value = 0;
@@ -848,8 +1318,30 @@ $transactionHistory = getTransactionHistory($pdo, $_SESSION['user_id'], $searchQ
             const limit = parseInt(this.value);
             refreshData(searchQuery, limit);
         });
+        
+        // Inicializar los gráficos mejorados
+        initializeCharts();
+        
+        // Actualizar los totales en el pie de los gráficos
+        updateChartTotals();
+        
+        // Configurar los botones para cambiar entre tipos de gráficos
+        document.getElementById('viewBarChart').addEventListener('click', function() {
+            toggleChartView('barChartContainer');
+            setActiveButton(this);
+        });
+        
+        document.getElementById('viewPieChart').addEventListener('click', function() {
+            toggleChartView('pieChartContainer');
+            setActiveButton(this);
+        });
+        
+        document.getElementById('viewTrendChart').addEventListener('click', function() {
+            toggleChartView('trendChartContainer');
+            setActiveButton(this);
+        });
     });
-</script>
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

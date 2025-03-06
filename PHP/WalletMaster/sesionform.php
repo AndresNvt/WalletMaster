@@ -142,8 +142,8 @@ $conexion->close();
         <a class="nav-item nav-link" href="../../index.html#details">Detalles</a>
         <a class="nav-item nav-link" href="../../index.html">Contacto</a>
        </div>
-        <a class="btn btn-light text-white px-3 py-2" href="sesionform.html">INICIAR SESIÓN</a>
-        <a class="btn btn-primary text-white px-3 py-2" href="sesionform.html#register">REGÍSTRATE</a>
+        <a class="btn btn-light text-white px-3 py-2" href="sesionform.php">INICIAR SESIÓN</a>
+        <a class="btn btn-primary text-white px-3 py-2" href="sesionform.php#register">REGÍSTRATE</a>
     </div>
   </div>
 </nav>

@@ -176,8 +176,9 @@ $savings_result = $stmt->get_result();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../../CSS/style.css">
     <link rel="stylesheet" href="../../CSS/stylesapp.css">
+    <!-- Favicon -->
+    <link rel="icon" href="../../imagenes/Favicon.png">
 </head>
 <body>
 
@@ -262,32 +263,40 @@ $savings_result = $stmt->get_result();
                             </div>
                         </div>
                         <div class="card-body">
-                            <?php if(!empty($saving['description'])): ?>
-                                <p class="card-text text-muted mb-3"><?php echo $saving['description']; ?></p>
-                            <?php endif; ?>
-                            
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold">Progreso:</span>
-                                <span class="badge bg-success">
-                                    <?php echo number_format($progress, 1); ?>%
-                                </span>
+                        <?php if(!empty($saving['description'])): ?>
+                            <p class="card-text text-muted mb-3"><?php echo $saving['description']; ?></p>
+                        <?php endif; ?>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold">Progreso:</span>
+                            <span class="badge bg-success">
+                                <?php echo number_format($progress, 1); ?>%
+                            </span>
+                        </div>
+                        
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                                role="progressbar" 
+                                style="width: <?php echo $progress; ?>%" 
+                                aria-valuenow="<?php echo $progress; ?>" 
+                                aria-valuemin="0" 
+                                aria-valuemax="100">
                             </div>
-                            
-                            <div class="progress mb-3" style="height: 25px;">
-                                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
-                                     role="progressbar" 
-                                     style="width: <?php echo $progress; ?>%" 
-                                     aria-valuenow="<?php echo $progress; ?>" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100">
-                                </div>
-                            </div>
-                            
-                            <div class="d-flex justify-content-between">
-                                <span>$<?php echo number_format($saving['current_savings'], 2, ',', '.'); ?> COP</span>
-                                <span>$<?php echo number_format($saving['goal_amount'], 2, ',', '.'); ?> COP</span>
-                            </div>
-                            
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <span>$<?php echo number_format($saving['current_savings'], 2, ',', '.'); ?> COP</span>
+                            <span>$<?php echo number_format($saving['goal_amount'], 2, ',', '.'); ?> COP</span>
+                        </div>
+                        
+                        <!-- New section to show remaining amount -->
+                        <div class="text-muted mt-2 text-end">
+                            <small>Faltan: $<?php 
+                                $remaining = $saving['goal_amount'] - $saving['current_savings'];
+                                echo number_format($remaining, 2, ',', '.'); 
+                            ?> COP</small>
+                        </div>
+                        
                             <?php if($history_result->num_rows > 0): ?>
                                 <div class="mt-4">
                                     <h6 class="border-bottom pb-2">Historial de aportes</h6>
@@ -364,7 +373,7 @@ $savings_result = $stmt->get_result();
                     </div>
                     <div class="mb-3">
                         <label for="goal_amount" class="form-label">Monto objetivo (COP) *</label>
-                        <input type="number" class="form-control" id="goal_amount" name="goal_amount" min="1" step="0.01" required>
+                        <input type="number" class="form-control" id="goal_amount" name="goal_amount" min="0" step="0.01" required>
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Descripción (opcional)</label>
@@ -393,7 +402,7 @@ $savings_result = $stmt->get_result();
                 <form action="" method="POST" id="addMoneyForm">
                     <div class="mb-3">
                         <label for="amount_added" class="form-label">Monto a añadir (COP) *</label>
-                        <input type="number" class="form-control" id="amount_added" name="amount_added" min="0.01" step="0.01" required>
+                        <input type="number" class="form-control" id="amount_added" name="amount_added" min="0" step="0.01" required>
                     </div>
                     <input type="hidden" name="savings_id" id="savings_id">
                     <input type="hidden" name="add_money" value="1">
@@ -423,7 +432,7 @@ $savings_result = $stmt->get_result();
                     </div>
                     <div class="mb-3">
                         <label for="edit_goal_amount" class="form-label">Monto objetivo (COP) *</label>
-                        <input type="number" class="form-control" id="edit_goal_amount" name="goal_amount" min="1" step="0.01" required>
+                        <input type="number" class="form-control" id="edit_goal_amount" name="goal_amount" min="0" step="0.01" required>
                     </div>
                     <div class="mb-3">
                         <label for="edit_description" class="form-label">Descripción (opcional)</label>
@@ -710,6 +719,33 @@ document.querySelectorAll('[id^="searchHistory-"]').forEach(searchInput => {
 
     // Configurar formulario para eliminar aporte
     setupAjaxForm('deleteContributionForm', 'deleteContributionModal');
+});
+
+// Validación para prevenir números negativos
+document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('input', function(e) {
+        if (parseFloat(this.value) < 0) {
+            this.value = 0;
+        }
+    });
+    
+    // También validar en el envío del formulario
+    input.closest('form')?.addEventListener('submit', function(e) {
+        const numInputs = this.querySelectorAll('input[type="number"]');
+        let hasNegative = false;
+        
+        numInputs.forEach(inp => {
+            if (parseFloat(inp.value) < 0) {
+                inp.value = 0;
+                hasNegative = true;
+            }
+        });
+        
+        if (hasNegative) {
+            e.preventDefault();
+            alert('No se permiten valores negativos.');
+        }
+    });
 });
 </script>
 

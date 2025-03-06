@@ -168,7 +168,7 @@ a:hover {
   font-weight: 700;
   font-family: "Open Sans", sans-serif;
   transition: 0.5s;
-  border: #dc3545;
+  border: 2px solid #dc3545;
   padding: 10px 20px;
   box-sizing: border-box;
 }
@@ -212,19 +212,20 @@ a:hover {
 
 
 /* Estilos Barra de Navegación */
-
 .navbar {
   height: 80px;
-  margin: 20px;
-  background-color: white ;
+  margin: 20px 20px 0 20px;
+  background-color: #23102c;
   border-radius: 10px;
   border: solid 4px;
-  border-color: #fff;
+  border-color: #502677;
   padding: 1rem;
   animation: navbar-border-bg-color 4s linear infinite;
+  transition: all 0.3s ease;
+  z-index: 1000;
 }
 
-
+/* Animación del fondo y borde de la navbar */
 @keyframes navbar-border-bg-color {
   0% {
     background-color: #23102c;
@@ -244,23 +245,40 @@ a:hover {
   }
 }
 
+/* Estilos para la navbar cuando se hace scroll */
+.navbar.scrolled {
+  margin: 0;
+  border-radius: 0;
+  width: 100%;
+  padding: 0.5rem 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
 
+/* Estilos para navbar sticky */
+.sticky-top {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  transition: all 0.3s ease;
+}
 
-
+/* Estilos de los enlaces de navegación */
 .navbar-light .navbar-nav .nav-link {
   margin-right: 18px;
-  color: #8d8d8d !important;
+  color: #fff !important;
   font-size: 16px;
   font-weight: 700;
   text-decoration: none;
   transition: .3s ease;
   position: relative;
+  padding: 0.5rem 0;
 }
 
+/* Efecto de subrayado en los enlaces */
 .navbar .nav-link::before {
   content: "";
   position: absolute;
-  bottom: 4px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
@@ -277,16 +295,13 @@ a:hover {
   visibility: visible;
 }
 
-.sticky-top.navbar-light .navbar-nav .nav-link {
-  padding: 20px 0;
-  color: var(--dark) !important;
-}
-
+/* Estado hover y activo de los enlaces */
 .navbar-light .navbar-nav .nav-link:hover,
 .navbar-light .navbar-nav .nav-link.active {
   color: #fff !important;
 }
 
+/* Estilos del logo */
 .navbar-light .navbar-brand img {
   max-height: 50px;
   transition: .5s;
@@ -298,147 +313,101 @@ a:hover {
 }
 
 .home-logo {
-  width: 120%;
-  height: 120%;
-  padding-left: 2rem;
+  width: auto;
+  height: 50px;
+  padding-left: 1rem;
+  transition: transform 0.3s ease;
 }
 
 .home-logo:hover {
   transform: scale(1.1);
 }
 
-.sticky-top.navbar-light .navbar-brand img {
-  max-height: 45px;
-}
-
-.navbar .dropdown-toggle::after {
-  border: none;
-  content: "\f107";
-  font-family: "Font Awesome 5 Free";
-  font-weight: 600;
-  vertical-align: middle;
-  margin-left: 8px;
-}
-
+/* Estilos del botón de navegación móvil */
 .navbar-toggler {
   border: none;
+  padding: 0.5rem;
+  background-color: transparent;
 }
 
-
+.navbar-toggler:focus {
+  box-shadow: none;
+}
 
 .navbar-toggler-icon {
   background-image: url('data:image/svg+xml;charset=utf8,%3Csvg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath stroke="white" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"/%3E%3C/svg%3E');
 }
 
-
-@media (min-width: 1200px) {
-  .navbar .nav-item .dropdown-menu {
-    display: block;
-    visibility: hidden;
-    top: 100%;
-    transform: rotateX(-75deg);
-    transform-origin: 0% 0%;
-    border: 0;
-    border-radius: 10px;
-    transition: .5s;
-    opacity: 0;
-  }
+/* Botones de registro e inicio de sesión */
+.btn-primary {
+  background-color: #8a38b1;
+  border-color: #8a38b1;
+  margin-left: 10px;
 }
 
-.dropdown .dropdown-menu a:hover {
-  background: var(--bs-primary);
-  color: var(--bs-white);
+.btn-light {
+  background-color: transparent;
+  border-color: #fff;
 }
 
-.navbar .nav-item:hover .dropdown-menu {
-  transform: rotateX(0deg);
-  visibility: visible;
-  background: var(--bs-light) !important;
-  transition: .5s;
-  opacity: 1;
-}
-
-.collapse.navbar-collapse {
-  transition: 0.5s;
-}
-
+/* Estilos para versión móvil */
 @media (max-width: 992px) {
-  nav.bg-transparent {
-    position: absolute;
-    width: 100%;
-    background: transparent !important;
-  }
-
-  .navbar.navbar-expand-lg button span {
-    position: relative;
-    z-index: 99;
-  }
-
   .navbar {
-    position: absolute;
-    background: #23102c;
-    z-index: 2;
+    margin: 0;
+    border-radius: 0;
+    width: 100%;
+    height: auto;
+    min-height: 70px;
   }
-
-  .sticky-top.navbar-light {
-    position: relative;
-    background: var(--bs-white) !important;
-    padding: 0 20px 20px 20px !important;
+  
+  .navbar-collapse {
+    background-color: #23102c;
+    padding: 1rem;
+    border-radius: 0 0 10px 10px;
+    margin-top: 0.5rem;
   }
-
-  .sticky-top.navbar-light {
-    background: transparent;
+  
+  .navbar.scrolled {
+    padding: 0.5rem 1rem;
   }
-
-  nav.navbar {
-    padding: 0 30px 30px 0;
+  
+  .home-logo {
+    padding-left: 0;
+    height: 40px;
   }
-
-  .navbar.navbar-expand-lg .navbar-toggler {
-    padding: 10px 20px;
-    border: 1px solid #ffffff;
-    color: #8a38b1;
-    font-size: 1.25rem;
+  
+  .navbar-nav {
+    padding: 1rem 0;
   }
-
-  .navbar-light .navbar-collapse {
-    margin-top: 15px;
-    border-top: 1px solid #DDDDDD;
+  
+  .navbar-light .navbar-nav .nav-link {
+    padding: 0.75rem 0;
+    text-align: center;
   }
-
-  .navbar-light .navbar-nav .nav-link,
-  .sticky-top.navbar-light .navbar-nav .nav-link {
-    padding: 10px 0;
-    margin-left: 0;
-    color: #86929b !important;
-  }
-
-
-  .navbar-light .navbar-brand img {
-    max-height: 45;
-  }
-
-  .hero-header {
-    margin-top: -100px !important;
+  
+  .btn-primary, .btn-light {
+    display: block;
+    margin: 0.5rem auto;
+    width: 80%;
+    text-align: center;
   }
 }
 
-@media (min-width: 992px) {
-  .navbar-light {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 999;
+/* Estilos para pantallas grandes */
+@media (min-width: 993px) {
+  .navbar-collapse {
+    display: flex;
+    justify-content: flex-end;
   }
-
-  .sticky-top.navbar-light {
-    position: fixed;
-    background: var(--bs-light) !important;
+  
+  .navbar-nav {
+    display: flex;
+    align-items: center;
   }
-}
-
-.me-4 {
-  margin-right: 0.5rem;
+  
+  .btn-primary, .btn-light {
+    margin-left: 10px;
+  }
 }
 
 
@@ -824,9 +793,14 @@ a:hover {
 
 .tabs .image-container {
   margin-right: 3rem;
-  margin-left: 5rem;
+  margin-left: 20rem;
   margin-bottom: 0rem;
-  margin-top: 4rem;
+  margin-top: 1.8rem;
+}
+
+.tabs .image-container .img-fluid {
+  width: 240px;
+  height: 240px;
 }
 
 .tabs .text-container {

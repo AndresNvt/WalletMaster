@@ -12,13 +12,16 @@ if (isset($_POST['logout'])) {
 // Get current page filename to set active class
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Link to external CSS files -->
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
 
 <div class="sidebar-container" id="sidebar">
-    <!-- Mobile toggle button -->
-    <button id="sidebarToggle" class="sidebar-toggle">
-        <i class="fas fa-bars"></i>
-    </button>
-    
     <div class="sidebar-header">
         <img src="../../imagenes/Capa 4.png" alt="WalletMaster Logo" class="sidebar-logo">
         <h4 class="sidebar-title">WalletMaster</h4>
@@ -39,6 +42,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link <?php echo ($current_page == 'debts.php') ? 'active' : ''; ?>" href="debts.php">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span>Deudas</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link <?php echo ($current_page == 'profile.php') ? 'active' : ''; ?>" href="profile.php">
                     <i class="fas fa-user"></i>
                     <span>Perfil</span>
@@ -51,15 +60,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <form method="POST" class="w-100">
             <button type="submit" name="logout" class="btn btn-danger w-100">
                 <i class="fas fa-sign-out-alt"></i>
-                <span>Cerrar Sesión</span>
+                <span class="text-danger">Cerrar Sesión</span>
             </button>
         </form>
     </div>
 </div>
-
-<script>
-// Only needed for mobile view
-document.getElementById('sidebarToggle').addEventListener('click', function() {
-    document.getElementById('sidebar').classList.toggle('active');
-});
-</script>

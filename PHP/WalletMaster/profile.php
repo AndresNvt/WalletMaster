@@ -94,12 +94,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Perfil - WalletMaster</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../../CSS/style.css">
     <link rel="stylesheet" href="../../CSS/stylesapp.css">
+    <!-- Favicon -->
+    <link rel="icon" href="../../imagenes/Favicon.png">
 </head>
 <body>
     <?php include 'sidebar.php'; ?>
-
+<div class="main-content">
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -148,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-
+</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {

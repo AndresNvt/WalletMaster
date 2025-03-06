@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Handjet:wght@100..900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Laila:wght@300;400;500;600;700&family=SUSE:wght@100..800&family=Space+Grotesk:wght@300..700&display=swap');
+
 /* Estilos generales */
 * {
     margin: 0;
@@ -9,16 +12,37 @@ body {
     background-color: #121212;
 }
 
+body, p {
+    color: #555;
+    font: 400 1.125rem / 1.625rem "Kanit", sans-serif;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    font-family: "Kanit", sans-serif;
+}
+
 h1 {
     font-size: 4rem;
     color: white;
+    font: 700 4rem / 3.125rem "Open Sans", sans-serif;
+    letter-spacing: -0.2px;
     text-shadow:
     -1px -1px 0 #0a144e,
     1.5px 1.5px 0 #8a38b1;
 }
 
+h2 {
+    color: white !important;
+}
+
 h5 {
     color: white !important;
+}
+
+span {
+    color: white;
 }
 
 .card {
@@ -26,6 +50,16 @@ h5 {
     border: 3px solid;
     animation: card-border-color 5s linear infinite;
 }
+
+.card h4 {
+    font: 600 1.840rem/1.625rem "Kanit", sans-serif;
+    color: #f3f7fd;
+    text-shadow: 
+    -1px -1px 0 #0a144e,
+    1.5px 1.5px 0 #8a38b1;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
 
 @keyframes card-border-color {
     0% {
@@ -54,15 +88,35 @@ h5 {
     box-sizing: border-box;
 }
 
+.btn.btn-primary:hover {
+    background-color: transparent !important;
+    color: #fff !important;
+    text-decoration: none;
+    border-color: #fff;
+}
+
 .btn.btn-danger {
     background-color: #ffffff !important;
     color: #dc3545;
     font-weight: 700;
     font-family: "Open Sans", sans-serif;
     transition: 0.5s;
-    border: #dc3545;
+    border: 2px solid #dc3545;
     padding: 10px 20px;
     box-sizing: border-box;
+}
+
+.btn.btn-danger:hover {
+    background-color: transparent !important;
+    color: #fff !important;
+    text-decoration: none;
+    border-color: #fff;
+}
+
+.btn {
+    font-weight: 600;
+    transition: 0.5s;
+    border-radius: 5px;
 }
 
 /* Estilos para la modal */
@@ -71,7 +125,11 @@ h5 {
 }
 
 .modal-footer {
-    background-color: #212529;
+    background-color: #252525;
+}
+
+.modal-header {
+    background-color: #252525;
 }
 
 
@@ -147,142 +205,6 @@ h5 {
     padding: 0.25em 0.6em;
 }
 
-/* SIDE BAR */
-.sidebar-container {
-    position: fixed; 
-    left: 0;
-    top: 0;
-    height: 100vh;
-    width: 250px;
-    background-color: #202020;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    z-index: 1000;
-    border: 4px solid;
-    animation: sidebar-border-color 5s linear infinite;
-}
-
-@keyframes sidebar-border-color {
-    0% {
-      border-color: #0a144e;
-    }
-    25% {
-      border-color: #18102c;
-    }
-    50% {
-      border-color: #2d0a4e;
-    }
-    100% {
-      border-color: #0a144e;
-    }
-}
-
-.sidebar-toggle {
-    display: none;
-}
-
-.sidebar-header {
-    padding: 1.5rem;
-    text-align: center;
-    border-bottom: 1px solid #000000;
-}
-
-.sidebar-logo {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 0.5rem;
-}
-
-.sidebar-title {
-    color: white; 
-    margin: 0;
-    font-size: 1.2rem;
-}
-
-.sidebar-nav {
-    flex-grow: 1;
-    padding: 1rem 0;
-}
-
-.nav-link {
-    padding: 0.8rem 1.5rem;
-    color: #fff; 
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-}
-
-.nav-link:hover {
-    background-color: #505050;
-    color: #a67fda; 
-}
-
-
-.nav-link.active {
-    background-color: #460d7c; 
-    color: white;
-    border-left: 4px solid #a67fda; 
-}
-
-.nav-link i {
-    width: 20px;
-    text-align: center;
-}
-
-.sidebar-footer {
-    padding: 1rem;
-    border-top: 1px solid #444; 
-}
-
-
-.container {
-    margin-left: 250px;
-    width: calc(100% - 250px);
-    transition: none; 
-}
-
-/* Responsive  */
-@media (max-width: 768px) {
-    .sidebar-container {
-        width: 250px;
-        left: -250px; 
-    }
-    
-    .sidebar-toggle {
-        display: flex; 
-        position: fixed;
-        left: 10px;
-        top: 10px;
-        z-index: 1001;
-    }
-    
-    .sidebar-container.active {
-        left: 0; 
-    }
-    
-    .container {
-        margin-left: 0;
-        width: 100%;
-    }
-}
-
-.form-label {
-    color: white !important;
-}
-
-h3 {
-    color: white !important;
-}
-
-h4 {
-    color: white !important;
-}
-
-span {
-    color: white;
-}
 
 /* Estilos específicos para el historial de transacciones */
 .table-responsive {
@@ -336,6 +258,11 @@ h6 {
     color: #ffffff;
 }
 
+/* Estilos de deudas */
+
+h2, .page-tittle {
+    color: white !important;
+}
 
 
 /* HEAD ESTILO */
